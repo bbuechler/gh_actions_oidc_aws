@@ -4,7 +4,7 @@
 
 ### Deploy CloudFormation template
 
-I have including an example Cloudformation Template derived from [GitHub's example](https://github.com/aws-actions/configure-aws-credentials#sample-iam-role-cloudformation-template). This can be deployed using the AWS Console or by command line
+I have included [`oidc_provider_cfn.yaml`](oidc_provider_cfn.yaml) as an example Cloudformation template derived from [GitHub's example](https://github.com/aws-actions/configure-aws-credentials#sample-iam-role-cloudformation-template). This can be deployed using the AWS Console or by command line.
 
 ```
 aws cloudformation deploy \
