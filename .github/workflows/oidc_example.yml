@@ -22,8 +22,8 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          role-to-assume: arn:aws:iam::{{env.AWS_ACCOUNT_NUMBER}}:role/{{env.AWS_IAM_ROLE_NAME}}
-          aws-region: {{env.AWS_DEFAULT_REGION}}
+          role-to-assume: arn:aws:iam::${{env.AWS_ACCOUNT_NUMBER}}:role/${{env.AWS_IAM_ROLE_NAME}}
+          aws-region: ${{env.AWS_DEFAULT_REGION}}
 
       - name: Dump latest timestamp
         run: |
