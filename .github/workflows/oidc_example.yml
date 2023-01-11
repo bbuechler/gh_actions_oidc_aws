@@ -17,15 +17,13 @@ jobs:
        AWS_ACCOUNT_NUMBER: ${{ secrets.AWS_ACCOUNT_NUMBER }}
        AWS_IAM_ROLE_NAME: ${{ secrets.AWS_IAM_ROLE_NAME }}
        AWS_PUSH_BUCKET: ${{ secrets.AWS_PUSH_BUCKET }}
-
     steps:
     
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          role-to-assume: arn:aws:iam::${AWS_ACCOUNT_NUMBER}:role/${AWS_IAM_ROLE_NAME}
-          aws-region: ${AWS_DEFAULT_REGION}
-          
+          role-to-assume: arn:aws:iam::{{env.AWS_ACCOUNT_NUMBER}}:role/{{env.AWS_IAM_ROLE_NAME}}
+          aws-region: {{env.AWS_DEFAULT_REGION}}
 
       - name: Dump latest timestamp
         run: |
