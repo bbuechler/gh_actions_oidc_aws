@@ -1,0 +1,72 @@
+# Cribbed from https://github.com/aws-actions/configure-aws-credentials#sample-iam-role-cloudformation-template
+Parameters:
+  GitHubOrg:
+    Description: Github Organization / Account Name 
+    Type: String
+  RepositoryName:
+    Description: Github Repo allowed to access this Provider
+    Type: String
+  RoleName:
+    Description: IAM Role name to create
+    Type: String
+  PermissionList:
+    Description: Comma seperated list of IAM Permisisons 
+    Type: String
+  ResourceList:
+    Description: Comma seperated list of Resources 
+    Type: String
+
+Metadata: 
+  AWS::CloudFormation::Interface: 
+    ParameterGroups: 
+      - Label: 
+          default: "Github Configurations"
+        Parameters: 
+          - GitHubOrg
+          - RepositoryName
+      - Label:
+          default: "Iam Permissions"
+        Parameters: 
+          - RoleName
+          - PermissionList
+          - ResourceList
+
+Resources:
+  Role:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "${RoleName}-${GitHubOrg}-${RepositoryName}-Role"
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action: sts:AssumeRoleWithWebIdentity
+            Principal: 
+              Federated: !Ref GithubOidc
+            Condition:
+              StringLike:
+                token.actions.githubusercontent.com:sub: !Sub repo:${GitHubOrg}/${RepositoryName}:*
+
+      # This should be better tuned to Least-Priviliage
+      Policies:
+      - PolicyName: !Sub "${RoleName}-${GitHubOrg}-${RepositoryName}-Policy"
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action: 
+              !Split [ ',', !Ref PermissionList ]
+            Resource: 
+              !Split [ ',', !Ref ResourceList ]
+
+  GithubOidc:
+    Type: AWS::IAM::OIDCProvider
+    Properties:
+      Url: https://token.actions.githubusercontent.com
+      ClientIdList: 
+        - sts.amazonaws.com
+      ThumbprintList:
+        - 6938fd4d98bab03faadb97b34396831e3780aea1
+
+Outputs:
+  Role:
+    Value: !GetAtt Role.Arn 
